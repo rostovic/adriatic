@@ -24,7 +24,7 @@ const SingleAccomodation = ({ data }) => {
   const maxDate = new Date("2024-12-31");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  // console.log(data);
+  console.log(data);
 
   // console.log(startDate);
   // console.log(endDate);
@@ -268,6 +268,12 @@ const SingleAccomodation = ({ data }) => {
 
     return (
       <div className={classes.calendarDiv}>
+        <button
+          className={classes.closeCalenderDiv}
+          onClick={() => setOpenCalendar(false)}
+        >
+          X
+        </button>
         <Calendar
           value={date}
           tileDisabled={tileDisabled}

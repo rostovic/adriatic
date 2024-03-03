@@ -26,6 +26,9 @@ const HomePage = () => {
   const [accomodation, setAccomodation] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [state, dispatch] = useReducer(reducer, currentState);
+  const [date, setDate] = useState({ start: null, end: null });
+
+  // console.log(date);
 
   const getData = async () => {
     const response = await getAccomodationData();
@@ -73,6 +76,17 @@ const HomePage = () => {
       }
     }
 
+    if (date.start && date.end) {
+      filteredData = filteredData.filter((accomodation) =>
+        accomodation.availableDates.some((availableDate) => {
+          const startDate = new Date(availableDate.intervalStart);
+          const endDate = new Date(availableDate.intervalEnd);
+
+          return startDate <= date.end && endDate >= date.start;
+        })
+      );
+    }
+
     return filteredData.map((data) => (
       <SingleAccomodation data={data} key={data.id} />
     ));
@@ -98,8 +112,26 @@ const HomePage = () => {
           style={{
             display: "flex",
             flexDirection: "column",
+            gap: "0.5rem",
           }}
         >
+          <div>
+            <input
+              type="date"
+              min="2024-01-01"
+              max="2024-12-31"
+              onChange={(e) => setDate({ start: new Date(e.target.value) })}
+            />
+            <label> to </label>
+            <input
+              type="date"
+              min="2024-01-01"
+              max="2024-12-31"
+              onChange={(e) =>
+                setDate({ ...date, end: new Date(e.target.value) })
+              }
+            />
+          </div>
           <div className={classes.amenityDiv}>
             <input
               type="number"

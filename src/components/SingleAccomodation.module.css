@@ -77,3 +77,22 @@
   z-index: 999;
   backdrop-filter: blur(4px);
 }
+
+.closeCalenderDiv {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 2rem;
+  right: 2rem;
+  padding: 0.5rem;
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  border: 0.1rem solid black;
+}
+
+.closeCalenderDiv:hover {
+  cursor: pointer;
+}
