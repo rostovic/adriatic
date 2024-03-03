@@ -1,0 +1,61 @@
+.mainLayout {
+  height: 100%;
+  width: 80%;
+  background-color: lightgrey;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1rem;
+}
+
+.filterDiv {
+  height: 14rem;
+  width: 40%;
+  background-color: white;
+  aspect-ratio: auto;
+  padding: 1rem;
+}
+
+.amenityDiv {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.amenityLabel {
+  font-weight: bold;
+  font-size: 16;
+}
+
+.checkBox {
+  width: 1rem;
+  height: 1rem;
+}
+
+.loaderContainer {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 6px solid grey;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

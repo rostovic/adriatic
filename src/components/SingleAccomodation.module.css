@@ -1,0 +1,79 @@
+.cardDiv {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+  max-width: 30rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: height 0.5s ease;
+}
+
+.beachInfoDiv {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.imageStyles {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 1rem 1rem 0rem 0rem;
+}
+
+.expandDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2rem;
+}
+
+.expandDiv:hover {
+  background-color: lightgrey;
+  cursor: pointer;
+  border-radius: 0rem 0rem 1rem 1rem;
+}
+
+.titleDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2rem;
+  width: 100%;
+}
+
+.informationDiv {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dateDiv {
+  display: flex;
+  justify-content: center;
+  min-width: 8rem;
+  padding: 0.75rem;
+  border-radius: 1rem;
+}
+
+.dateDiv:hover {
+  cursor: pointer;
+  background-color: lightgrey;
+}
+
+.calendarDiv {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+}
