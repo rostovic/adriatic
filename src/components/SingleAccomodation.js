@@ -39,7 +39,6 @@ const SingleAccomodation = ({ data, setModalInfo }) => {
       capacity: data.capacity,
     });
     setExpand(false);
-    setPriceRange(null);
     setStartDate(null);
     setEndDate(null);
     setDailyPrices(null);
