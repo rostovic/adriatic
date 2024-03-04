@@ -17,23 +17,101 @@ import { formattedDate } from "../functions/helpers";
 
 const SingleAccomodation = ({ data }) => {
   const [expand, setExpand] = useState(false);
-  const [date, setDate] = useState(new Date());
   const [openCalendar, setOpenCalendar] = useState(false);
   const [priceRange, setPriceRange] = useState(null);
-  const minDate = new Date("2024-01-01");
-  const maxDate = new Date("2024-12-31");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  console.log(data);
+  const [dailyPrices, setDailyPrices] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(null);
+  const maxDate = new Date("2024-12-31");
+  const minDate = new Date("2024-01-01");
+  // console.log(data);
 
   // console.log(startDate);
   // console.log(endDate);
+  const calculateTotalPrice = (data, startDate, endDate) => {
+    if (!startDate || !endDate) return { totalPrice: null, dailyPrices: null };
+
+    const startDateTime = new Date(startDate).setHours(0, 0, 0, 0);
+    const endDateTime = new Date(endDate).setHours(0, 0, 0, 0);
+
+    let totalPrice = 0;
+    const dailyPrices = [];
+
+    // Iterate over each day in the date range
+    for (
+      let currentDateTime = startDateTime;
+      currentDateTime < endDateTime;
+      currentDateTime += 24 * 60 * 60 * 1000
+    ) {
+      // Check if the current date is within any available interval
+      const isDateAvailable = data.availableDates.some((dateInterval) => {
+        const intervalStart = new Date(dateInterval.intervalStart).setHours(
+          0,
+          0,
+          0,
+          0
+        );
+        const intervalEnd = new Date(dateInterval.intervalEnd).setHours(
+          0,
+          0,
+          0,
+          0
+        );
+
+        return (
+          currentDateTime >= intervalStart &&
+          currentDateTime < intervalEnd &&
+          currentDateTime !== intervalEnd
+        );
+      });
+
+      if (isDateAvailable) {
+        // Find the corresponding price interval in the pricelist
+        const priceInterval = data.pricelistInEuros.find((priceInterval) => {
+          const intervalStart = new Date(priceInterval.intervalStart).setHours(
+            0,
+            0,
+            0,
+            0
+          );
+          const intervalEnd = new Date(priceInterval.intervalEnd).setHours(
+            0,
+            0,
+            0,
+            0
+          );
+
+          return (
+            currentDateTime >= intervalStart && currentDateTime < intervalEnd
+          );
+        });
+
+        if (priceInterval) {
+          const priceForDay = {
+            day: new Date(currentDateTime),
+            price: priceInterval.pricePerNight,
+          };
+
+          dailyPrices.push(priceForDay);
+          totalPrice += priceInterval.pricePerNight;
+        }
+      }
+    }
+    return { totalPrice, dailyPrices };
+  };
 
   const isDateDisabled = (date) => {
+    date.setHours(0, 0, 0, 0);
+
     return !data.availableDates.some((availableDate) => {
       const startDate = new Date(availableDate.intervalStart);
       const endDate = new Date(availableDate.intervalEnd);
-      return date >= startDate && date <= endDate;
+
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+
+      return date >= startDate && date < endDate;
     });
   };
 
@@ -52,11 +130,20 @@ const SingleAccomodation = ({ data }) => {
       setOpenCalendar(false);
     }
   };
-
   useEffect(() => {
     const prices = data.pricelistInEuros.map((entry) => entry.pricePerNight);
     setPriceRange({ min: Math.min(...prices), max: Math.max(...prices) });
   }, [data]);
+
+  useEffect(() => {
+    const calculateData = calculateTotalPrice(data, startDate, endDate);
+    if (calculateData.totalPrice !== null) {
+      setTotalPrice(calculateData.totalPrice);
+    }
+    if (calculateData.dailyPrices !== null) {
+      setDailyPrices(calculateData.dailyPrices);
+    }
+  }, [data, startDate, endDate]);
 
   const amenitiesArray = [
     "airConditioning",
@@ -202,6 +289,31 @@ const SingleAccomodation = ({ data }) => {
     return `${priceRange.min}€ - ${priceRange.max}€ per night`;
   };
 
+  const renderDailyPrices = () => {
+    if (dailyPrices === null) return;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
+      >
+        {dailyPrices.map((dayPrice) => (
+          <div
+            style={{ width: "50%", justifyContent: "flex-end" }}
+            key={dayPrice.day}
+          >
+            <span style={{ fontWeight: "bold" }}>
+              {formattedDate(dayPrice.day)} - {dayPrice.price}€
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const renderReservationDateAndPrice = () => {
     if (!expand) return null;
 
@@ -259,6 +371,18 @@ const SingleAccomodation = ({ data }) => {
         >
           <span style={{ fontWeight: "bold" }}>{renderPrice()}</span>
         </div>
+
+        {renderDailyPrices()}
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <span style={{ fontWeight: "bold" }}>Total price: {totalPrice}€</span>
+        </div>
       </div>
     );
   };
@@ -275,7 +399,7 @@ const SingleAccomodation = ({ data }) => {
           X
         </button>
         <Calendar
-          value={date}
+          value={new Date()}
           tileDisabled={tileDisabled}
           minDate={minDate}
           maxDate={maxDate}
@@ -290,7 +414,7 @@ const SingleAccomodation = ({ data }) => {
     <div
       className={classes.cardDiv}
       style={{
-        height: expand ? "32rem" : "16rem",
+        height: dailyPrices ? "36rem" : expand ? "32rem" : "16rem",
         aspectRatio: "auto",
       }}
     >
