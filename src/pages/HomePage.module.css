@@ -1,4 +1,5 @@
 .mainLayout {
+  position: relative;
   height: 100%;
   width: 80%;
   background-color: lightgrey;
@@ -31,6 +32,50 @@
 .checkBox {
   width: 1rem;
   height: 1rem;
+}
+
+.modalDiv {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 100;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.modalContent {
+  display: flex;
+  background-color: white;
+  height: 12rem;
+  width: 30rem;
+  border: 0.15rem solid black;
+  padding: 1rem;
+  font-weight: bold;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buttonOK {
+  background-color: green;
+  border: 0;
+  padding: 1rem;
+  height: 3rem;
+  width: 6rem;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+}
+
+.buttonOK:hover {
+  cursor: pointer;
+  opacity: 0.8;
 }
 
 .loaderContainer {

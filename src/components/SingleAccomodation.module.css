@@ -119,3 +119,23 @@
   justify-content: center;
   align-items: center;
 }
+
+.fontBold {
+  font-weight: bold;
+}
+
+.buttonReserve {
+  background-color: green;
+  border: 0;
+  padding: 1rem;
+  height: 3rem;
+  width: 8rem;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+}
+
+.buttonReserve:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}

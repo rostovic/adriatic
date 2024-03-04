@@ -2,6 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import { getAccomodationData } from "../api/api";
 import classes from "./HomePage.module.css";
 import SingleAccomodation from "../components/SingleAccomodation";
+import { formattedDate } from "../functions/helpers";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -27,6 +28,7 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [state, dispatch] = useReducer(reducer, currentState);
   const [date, setDate] = useState({ start: null, end: null });
+  const [modalInfo, setModalInfo] = useState(null);
 
   // console.log(date);
 
@@ -88,8 +90,36 @@ const HomePage = () => {
     }
 
     return filteredData.map((data) => (
-      <SingleAccomodation data={data} key={data.id} />
+      <SingleAccomodation
+        data={data}
+        key={data.id}
+        setModalInfo={setModalInfo}
+      />
     ));
+  };
+
+  const renderModalInfo = () => {
+    if (modalInfo === null) return;
+
+    return (
+      <div className={classes.modalDiv}>
+        <div className={classes.modalContent}>
+          <span>You've made a reservation for {modalInfo.title}!</span>
+          <span>
+            {formattedDate(modalInfo.startDate)} -{" "}
+            {formattedDate(modalInfo.endDate)}
+          </span>
+          <span>Capacity: {modalInfo.capacity}</span>
+          <span>Total price: {modalInfo.totalPrice}€</span>
+          <button
+            className={classes.buttonOK}
+            onClick={() => setModalInfo(null)}
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const renderFilterCheckbox = (label, filterName) => {
@@ -173,6 +203,7 @@ const HomePage = () => {
     <div className={classes.mainLayout}>
       {renderFilters()}
       {renderAccomodation()}
+      {renderModalInfo()}
     </div>
   );
 };

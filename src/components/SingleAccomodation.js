@@ -19,7 +19,7 @@ import {
   formattedDate,
 } from "../functions/helpers";
 
-const SingleAccomodation = ({ data }) => {
+const SingleAccomodation = ({ data, setModalInfo }) => {
   const [expand, setExpand] = useState(false);
   const [openCalendar, setOpenCalendar] = useState(false);
   const [priceRange, setPriceRange] = useState(null);
@@ -29,6 +29,22 @@ const SingleAccomodation = ({ data }) => {
   const [totalPrice, setTotalPrice] = useState(null);
   const maxDate = new Date("2024-12-31");
   const minDate = new Date("2024-01-01");
+
+  const handleReserve = () => {
+    setModalInfo({
+      title: data.title,
+      totalPrice: totalPrice,
+      startDate: startDate,
+      endDate: endDate,
+      capacity: data.capacity,
+    });
+    setExpand(false);
+    setPriceRange(null);
+    setStartDate(null);
+    setEndDate(null);
+    setDailyPrices(null);
+    setTotalPrice(null);
+  };
 
   useEffect(() => {
     if (startDate === null || endDate === null) {
@@ -202,7 +218,7 @@ const SingleAccomodation = ({ data }) => {
             style={{ width: "50%", justifyContent: "flex-end" }}
             key={dayPrice.day}
           >
-            <span style={{ fontWeight: "bold" }}>
+            <span className={classes.fontBold}>
               {formattedDate(dayPrice.day)} - {dayPrice.price}€
             </span>
           </div>
@@ -242,7 +258,7 @@ const SingleAccomodation = ({ data }) => {
               setOpenCalendar(true);
             }}
           >
-            <span style={{ fontWeight: "bold" }}>
+            <span className={classes.fontBold}>
               {startDate ? formattedStartDate : "Pick a start date"}
             </span>
           </div>
@@ -252,7 +268,7 @@ const SingleAccomodation = ({ data }) => {
               setOpenCalendar(true);
             }}
           >
-            <span style={{ fontWeight: "bold" }}>
+            <span className={classes.fontBold}>
               {endDate ? formattedEndDate : "Pick a end date"}
             </span>
           </div>
@@ -266,7 +282,7 @@ const SingleAccomodation = ({ data }) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: "bold" }}>{renderPrice()}</span>
+          <span className={classes.fontBold}>{renderPrice()}</span>
         </div>
 
         {renderDailyPrices()}
@@ -278,8 +294,20 @@ const SingleAccomodation = ({ data }) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: "bold" }}>Total price: {totalPrice}€</span>
+          <span className={classes.fontBold}>Total price: {totalPrice}€</span>
         </div>
+      </div>
+    );
+  };
+
+  const renderReserveButton = () => {
+    if (!startDate || !endDate) return;
+
+    return (
+      <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
+        <button className={classes.buttonReserve} onClick={handleReserve}>
+          RESERVE
+        </button>
       </div>
     );
   };
@@ -331,6 +359,7 @@ const SingleAccomodation = ({ data }) => {
         {renderBasicInfo()}
         {renderAmenities()}
         {renderReservationDateAndPrice()}
+        {renderReserveButton()}
       </div>
       {renderCalendar()}
       {renderExpand()}
