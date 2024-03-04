@@ -96,3 +96,26 @@
 .closeCalenderDiv:hover {
   cursor: pointer;
 }
+
+.dailyPricesDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.capacityDiv {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.soloAmenityDiv {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}

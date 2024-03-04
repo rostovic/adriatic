@@ -13,7 +13,11 @@ import classes from "./SingleAccomodation.module.css";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { formattedDate } from "../functions/helpers";
+import {
+  amenitiesArray,
+  calculateTotalPrice,
+  formattedDate,
+} from "../functions/helpers";
 
 const SingleAccomodation = ({ data }) => {
   const [expand, setExpand] = useState(false);
@@ -25,81 +29,28 @@ const SingleAccomodation = ({ data }) => {
   const [totalPrice, setTotalPrice] = useState(null);
   const maxDate = new Date("2024-12-31");
   const minDate = new Date("2024-01-01");
-  // console.log(data);
 
-  // console.log(startDate);
-  // console.log(endDate);
-  const calculateTotalPrice = (data, startDate, endDate) => {
-    if (!startDate || !endDate) return { totalPrice: null, dailyPrices: null };
-
-    const startDateTime = new Date(startDate).setHours(0, 0, 0, 0);
-    const endDateTime = new Date(endDate).setHours(0, 0, 0, 0);
-
-    let totalPrice = 0;
-    const dailyPrices = [];
-
-    // Iterate over each day in the date range
-    for (
-      let currentDateTime = startDateTime;
-      currentDateTime < endDateTime;
-      currentDateTime += 24 * 60 * 60 * 1000
-    ) {
-      // Check if the current date is within any available interval
-      const isDateAvailable = data.availableDates.some((dateInterval) => {
-        const intervalStart = new Date(dateInterval.intervalStart).setHours(
-          0,
-          0,
-          0,
-          0
-        );
-        const intervalEnd = new Date(dateInterval.intervalEnd).setHours(
-          0,
-          0,
-          0,
-          0
-        );
-
-        return (
-          currentDateTime >= intervalStart &&
-          currentDateTime < intervalEnd &&
-          currentDateTime !== intervalEnd
-        );
-      });
-
-      if (isDateAvailable) {
-        // Find the corresponding price interval in the pricelist
-        const priceInterval = data.pricelistInEuros.find((priceInterval) => {
-          const intervalStart = new Date(priceInterval.intervalStart).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          const intervalEnd = new Date(priceInterval.intervalEnd).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-
-          return (
-            currentDateTime >= intervalStart && currentDateTime < intervalEnd
-          );
-        });
-
-        if (priceInterval) {
-          const priceForDay = {
-            day: new Date(currentDateTime),
-            price: priceInterval.pricePerNight,
-          };
-
-          dailyPrices.push(priceForDay);
-          totalPrice += priceInterval.pricePerNight;
-        }
-      }
+  useEffect(() => {
+    if (startDate === null || endDate === null) {
+      setDailyPrices(null);
+      setTotalPrice(null);
     }
-    return { totalPrice, dailyPrices };
-  };
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    const prices = data.pricelistInEuros.map((entry) => entry.pricePerNight);
+    setPriceRange({ min: Math.min(...prices), max: Math.max(...prices) });
+  }, [data]);
+
+  useEffect(() => {
+    const calculateData = calculateTotalPrice(data, startDate, endDate);
+    if (calculateData.totalPrice !== null) {
+      setTotalPrice(calculateData.totalPrice);
+    }
+    if (calculateData.dailyPrices !== null) {
+      setDailyPrices(calculateData.dailyPrices);
+    }
+  }, [data, startDate, endDate]);
 
   const isDateDisabled = (date) => {
     date.setHours(0, 0, 0, 0);
@@ -130,29 +81,6 @@ const SingleAccomodation = ({ data }) => {
       setOpenCalendar(false);
     }
   };
-  useEffect(() => {
-    const prices = data.pricelistInEuros.map((entry) => entry.pricePerNight);
-    setPriceRange({ min: Math.min(...prices), max: Math.max(...prices) });
-  }, [data]);
-
-  useEffect(() => {
-    const calculateData = calculateTotalPrice(data, startDate, endDate);
-    if (calculateData.totalPrice !== null) {
-      setTotalPrice(calculateData.totalPrice);
-    }
-    if (calculateData.dailyPrices !== null) {
-      setDailyPrices(calculateData.dailyPrices);
-    }
-  }, [data, startDate, endDate]);
-
-  const amenitiesArray = [
-    "airConditioning",
-    "parkingSpace",
-    "pets",
-    "pool",
-    "tv",
-    "wifi",
-  ];
 
   const icons = [
     <TbAirConditioning size={22} />,
@@ -197,15 +125,7 @@ const SingleAccomodation = ({ data }) => {
 
     return (
       <div style={{ display: "flex" }}>
-        <div
-          style={{
-            display: "flex",
-            flex: 1,
-            gap: "0.5rem",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div className={classes.capacityDiv}>
           <MdPeopleAlt size={20} />
           <div>
             <span style={{ fontSize: 18 }}>{data.capacity} </span>
@@ -219,15 +139,7 @@ const SingleAccomodation = ({ data }) => {
   const renderAmenity = (icon, property, icon2, property2, index) => {
     return (
       <div style={{ display: "flex" }} key={index}>
-        <div
-          style={{
-            display: "flex",
-            flex: 1,
-            gap: "0.5rem",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div className={classes.soloAmenityDiv}>
           {icon}
           {data.amenities[property] ? (
             <FaCircleCheck size={20} color="green" />
@@ -235,15 +147,7 @@ const SingleAccomodation = ({ data }) => {
             <FaCircleXmark size={20} color="red" />
           )}
         </div>
-        <div
-          style={{
-            display: "flex",
-            flex: 1,
-            gap: "0.5rem",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div className={classes.soloAmenityDiv}>
           {icon2}
           {data.amenities[property2] ? (
             <FaCircleCheck size={20} color="green" />
@@ -292,14 +196,7 @@ const SingleAccomodation = ({ data }) => {
   const renderDailyPrices = () => {
     if (dailyPrices === null) return;
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-        }}
-      >
+      <div className={classes.dailyPricesDiv}>
         {dailyPrices.map((dayPrice) => (
           <div
             style={{ width: "50%", justifyContent: "flex-end" }}
@@ -414,7 +311,7 @@ const SingleAccomodation = ({ data }) => {
     <div
       className={classes.cardDiv}
       style={{
-        height: dailyPrices ? "36rem" : expand ? "32rem" : "16rem",
+        height: dailyPrices ? "100%" : expand ? "32rem" : "16rem",
         aspectRatio: "auto",
       }}
     >
